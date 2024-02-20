@@ -24,12 +24,14 @@ public class ControllerCliente {
     @Autowired
     private ServiceCliente serviceCliente;
 
-
+/*
     // Conectado a la base de datos
     @GetMapping
     public String index(){
         return "Conectado";
     }
+
+ */
 
 
     // Tabla clientes

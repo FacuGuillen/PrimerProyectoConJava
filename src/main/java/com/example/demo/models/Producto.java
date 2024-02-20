@@ -22,6 +22,9 @@ public class Producto {
     @Column
     private Double precio;
 
+    @Column
+    private int stock;
+
 
     // Getters and Setters
 
@@ -47,5 +50,13 @@ public class Producto {
 
     public void setPrecio(Double precio) {
         this.precio = precio;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 }
