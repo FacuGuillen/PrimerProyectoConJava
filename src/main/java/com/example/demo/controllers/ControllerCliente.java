@@ -4,6 +4,11 @@ package com.example.demo.controllers;
 
 import com.example.demo.models.Cliente;
 import com.example.demo.repository.RepositoryCliente;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -17,84 +22,56 @@ import java.util.NoSuchElementException;
 
 public class ControllerCliente {
 
-    int contFecha = 0;
-
     @Autowired // Inyeccion de dependencia 
     private RepositoryCliente repo;
     @Autowired
     private ServiceCliente serviceCliente;
 
-/*
-    // Conectado a la base de datos
-    @GetMapping
-    public String index(){
-        return "Conectado";
-    }
-
- */
-
 
     // Tabla clientes
+    @Operation(summary = "List client", description = "Lista todos los clientes")
     @GetMapping("clientes") // @GetMapping: La solicitud que voy a estar realizando mediante el endpoint sera una solicitud a un metodo Get
     public List getClientes(){ // Lista de objetos clientes llamada Clientes
         return repo.findAll(); // Este método busca y devuelve todos los registros de una entidad en la base de datos.
     }
 
 
+    @Operation (summary = "Print client by id", description = "Mostrar cliente por su id")
     @GetMapping("cliente/{id}")
     public Cliente getCliente(@PathVariable Long id){
         return repo.findById(id).orElseThrow(() -> new NoSuchElementException("Cliente no encontrado"));
     }
 
 
-
-    @GetMapping("fecha")
-    public List getFechaActual(){
-        contFecha++;
-        LocalDate fechaActual = LocalDate.now();
-        return Collections.singletonList(fechaActual);
-    }
-
-
-    @GetMapping("contfecha")
-    public int getContFecha(){
-        return contFecha;
-    }
-
-
     // Dar de alta a un cliente
+    @Operation (summary = "Create new client", description = "Agrega cliente a la DB")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "404", description = "No se pudo realizar la operacion"
+                    ,content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Cliente.class))})})
     @PostMapping("alta") // @PostMapping: La solicitud que voy a estar realizando mediante el endpoint sera una solicitud a un metodo Post
     public String post (@RequestBody Cliente cliente){ // Trae la informacion desde el body de Cliente y la guarda en un JSON llamado cliente
-        serviceCliente.calcularEdadCliente(cliente);
-        repo.save(cliente); // Guarda un objeto Cliente
-        String mensaje = "El cliente " + cliente.getNombre() + " ha sido guardado exitosamente";
-        return mensaje;
+        return serviceCliente.guardarCliente(cliente);
     }
 
     // Modificar datos de un cliente
+    @Operation(summary = "Modify customer data", description = "Modifica los datos del cliente seleccionado por su id")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "404", description = "No se pudo realizar la operacion "
+                    ,content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Cliente.class))})})
     @PutMapping("modificar/{id}") // @PutMapping: La solicitud que voy a estar realizando mediante el endpoint sera una solicitud de un metodo Put
     // modificar/{id} en un endpoint
     public String update(@PathVariable Long id, @RequestBody Cliente cliente){ // Recibe parametro ID y parametro cliente
-        Cliente updateCliente = repo.findById(id).get(); // Guarda el objeto cliente con el id ingresado en updateCliente
-        String mensaje = "El cliente " + updateCliente.getNombre() + " ha sido modificado";
-        updateCliente.setNombre(cliente.getNombre()); // Se modifican los atributos del objeto updateCliente con los valores del objeto cliente recibido
-        updateCliente.setEmail(cliente.getEmail());
-        updateCliente.setFechaNacimiento(cliente.getFechaNacimiento());
-        repo.save(updateCliente); // Guarda valores de updateCliente y los guarda en el objeto cliente id
-        return mensaje;
+        return serviceCliente.updateCliente(id, cliente);
     }
 
     // Eliminar cliente
+    @Operation(summary = "Delete client", description = "Elimina el cliente seleccionado por su id")
     @DeleteMapping("baja/{id}") // @DeleteMapping: La solicitud que voy a estar realizando mediante el endpoint sera una solicitud de un metodo Delete
     public String delete(@PathVariable Long id){
-        Cliente deleteCliente = repo.findById(id).get(); // Busca en repo el Cliente con el id ingresado para luego asignarselo a deleteCliente
-        String mensaje = "El cliente " + deleteCliente + "ha sido eliminado";
-        repo.delete(deleteCliente); // Elimina
-        return mensaje;
+        return serviceCliente.deleteCliente(id);
     }
-
-
-
 
 }
 

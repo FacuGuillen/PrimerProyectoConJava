@@ -45,7 +45,7 @@ public class ControllerFactura {
     public String update(@PathVariable Long id, @RequestBody Factura factura){
         Factura updateFactura = repo.findById(id).get();
         String mensaje = "La factura n° " + updateFactura.getId() + " se ha modificado exitosamente";
-        updateFactura.setCantidadCompra(factura.getCantidadCompra());
+        //updateFactura.setCantidadCompra(factura.getCantidadCompra());
         updateFactura.setPrecioFinal(factura.getPrecioFinal());
         repo.save(updateFactura);
         return mensaje;

@@ -18,7 +18,7 @@ public class ControllerProducto {
 
 
     // Tabla producto
-    @GetMapping("producto")
+    @GetMapping("productos")
     public List<Producto> getProducto(){
         return repo.findAll();
     }

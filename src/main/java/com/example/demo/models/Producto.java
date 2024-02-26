@@ -1,9 +1,13 @@
 package com.example.demo.models;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,13 +21,19 @@ public class Producto {
     private Long id;
 
     @Column
+    @Schema(description = "Nombre del producto", requiredMode = Schema.RequiredMode.REQUIRED, example = "Smart tv LG")
     private String descripcion;
 
     @Column
+    @Schema(description = "Precio del producto", requiredMode = Schema.RequiredMode.REQUIRED, example = "100000.00")
     private Double precio;
 
     @Column
+    @Schema(description = "Stock del producto", requiredMode = Schema.RequiredMode.REQUIRED, example = "3")
     private int stock;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List <Venta> ventas = new ArrayList<>();
 
 
     // Getters and Setters

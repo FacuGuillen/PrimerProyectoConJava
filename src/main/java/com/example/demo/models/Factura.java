@@ -1,11 +1,14 @@
 package com.example.demo.models;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,13 +22,19 @@ public class Factura {
     private Long id;
 
     @Column
+    @Schema(description = "Fecha y hs de la factura generada por API")
     private LocalDateTime fechaFactura;
 
     @Column
-    private int cantidadCompraProducto;
+    @Schema(description = "Valor total facturado", requiredMode = Schema.RequiredMode.REQUIRED, example = "105.50")
+    private double precioFinal;
 
-    @Column
-    private int precioFinal;
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Venta> ventas = new ArrayList<>();
 
 
     // Getters and Setters
@@ -47,19 +56,11 @@ public class Factura {
         this.fechaFactura = fechaFactura;
     }
 
-    public int getCantidadCompra() {
-        return cantidadCompraProducto;
-    }
-
-    public void setCantidadCompra(int cantidadCompra) {
-        this.cantidadCompraProducto = cantidadCompra;
-    }
-
-    public int getPrecioFinal() {
+    public double getPrecioFinal() {
         return precioFinal;
     }
 
-    public void setPrecioFinal(int precioFinal) {
+    public void setPrecioFinal(double precioFinal) {
         this.precioFinal = precioFinal;
     }
 }
